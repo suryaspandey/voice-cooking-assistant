@@ -1,4 +1,5 @@
 const recipeService = require('../services/recipeService');
+const { uploadToS3 } = require("../services/recipeService");
 
 const getRecipes= async(req,res)=>{
     try {
@@ -32,7 +33,12 @@ const createRecipe= async(req,res)=>{
 
 const updateRecipe = async (req, res) => {
     try {
-        const updatedRecipe = await recipeService.updateRecipe(req.params.id, req.body);
+        let updatedData = {...req.body}
+        if(req.file){
+            const imageUrl = await uploadToS3(req.file);
+            updatedData.imageUrl = imageUrl;
+        }
+        const updatedRecipe = await recipeService.updateRecipe(req.params.id, updatedData);
         if (!updatedRecipe) {
             return res.status(404).send('Recipe not found');
         }
@@ -78,6 +84,28 @@ const searchRecipe = async(req,res)=>{
     }
 }
 
+const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const imageUrl = await uploadToS3(req.file);
+    res.status(200).json({ imageUrl });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to upload image", error });
+  }
+};
+
+const uploadRecipe = async (req, res) => {
+
+  try {
+    const recipe = await recipeService.uploadRecipe(req.body, req.file);
+    res.status(201).json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to upload recipe" });
+  }
+};
 
 module.exports = {
     getRecipes,
@@ -85,5 +113,7 @@ module.exports = {
     createRecipe,
     updateRecipe,
     deleteRecipe,
-    searchRecipe
+    searchRecipe,
+    uploadImage,
+    uploadRecipe
 };
