@@ -5,6 +5,7 @@ import AppRoutes from "./utilities/app-routes";
 import { AddRecipe, Home } from "./loadables";
 import { BrowserRouter } from "react-router-dom";
 import Navigation from "@components/Navigation";
+import Recipes from "@components/Recipes";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             element={<Navigate to={AppRoutes.HOME} />}
           />
           <Route path={AppRoutes.HOME} element={<Home />} />
+          <Route path={AppRoutes.RECIPES} element={<Recipes />} />
           <Route path={AppRoutes.ADD_RECIPE} element={<AddRecipe />} />
         </Routes>
       </BrowserRouter>
