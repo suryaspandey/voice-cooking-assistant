@@ -1,11 +1,17 @@
 import RecipeCard from "@components/RecipeCard";
+import { Button } from "@components/ui/button";
 import { Card } from "@components/ui/card";
+import { Input } from "@components/ui/input";
 import { useRecipeStore } from "@store/recipeStore";
-import { useEffect } from "react";
+import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Recipes = () => {
   const { recipesList, recipeListLoading, fetchRecipes, recipeListError }: any =
     useRecipeStore();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     fetchRecipes();
@@ -16,17 +22,61 @@ const Recipes = () => {
 
   console.log(recipesList);
 
+  const categories = [
+    "All",
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Dessert",
+    "Snacks",
+  ];
+
   return (
-    <>
-      <h2>Recipes List</h2>
+    <div className="p-2">
+      <div className="mb-8 ">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          Recipe Collection
+        </h1>
+        <p className="text-xl text-gray-600">
+          Discover and cook amazing recipes with voice guidance
+        </p>
+      </div>
+      <div className="mb-8 space-y-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search recipes or ingredients..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-12 text-lg border-orange-200"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              onClick={() => setSelectedCategory(category)}
+              className={
+                selectedCategory === category
+                  ? "bg-orange-500 hover:bg-orange-600"
+                  : "border-orange-200 hover:bg-orange-50"
+              }
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+      </div>
       <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ">
           {recipesList?.map((recipe: any) => (
             <RecipeCard recipe={recipe} />
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

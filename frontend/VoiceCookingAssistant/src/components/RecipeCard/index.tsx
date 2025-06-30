@@ -1,12 +1,12 @@
-import { Badge } from "@components/ui/badge";
 import { Card, CardContent } from "@components/ui/card";
 import { Clock, Users } from "lucide-react";
+import { Badge } from "@components/ui/badge";
+import { Button } from "@components/ui/button";
 
 export const RecipeCard = ({ recipe }: any) => {
   return (
     <>
       <Card className="rounded-2xl shadow-md overflow-hidden">
-        {/* Image Section */}
         <div className="h-40 bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
           {recipe.imageUrl ? (
             <img
@@ -17,11 +17,10 @@ export const RecipeCard = ({ recipe }: any) => {
           ) : null}
         </div>
 
-        {/* Content Section */}
         <CardContent className="p-4 space-y-3">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold text-lg">{recipe.title}</h3>
-            {/* <Badge variant="outline">{mealType || "Meal"}</Badge> */}
+            <Badge variant="outline">{recipe.category}</Badge>
           </div>
 
           <p className="text-muted-foreground text-sm">{recipe.description}</p>
