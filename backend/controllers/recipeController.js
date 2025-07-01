@@ -67,22 +67,29 @@ const deleteRecipe = async (req, res) => {
     }
 };
 
-const searchRecipe = async(req,res)=>{
-    const {query} =  req.query;
-    if(!query){
-        return res.status(400).send("Search query is required");
-    }
+const searchRecipe = async (req, res) => {
+  const { title, category } = req.query;
 
-    try {
-        
-        const results = await recipeService.searchRecipe(query);
-        
-        res.json(results)
-        
-    } catch (error) {
-        res.status(500).json({ error: 'Error searching recipes', details: error.message });
-    }
-}
+  if (!title && !category) {
+    return res.status(400).send("At least one search parameter is required");
+  }
+
+  const query = {};
+  if (title) {
+    query.title = { $regex: new RegExp(title, 'i') };
+  }
+  if (category) {
+    query.category = { $regex: new RegExp(category, 'i') };
+  }
+
+  try {
+    const results = await recipeService.searchRecipe(query);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Error searching recipes', details: error.message });
+  }
+};
+
 
 const uploadImage = async (req, res) => {
   try {

@@ -22,10 +22,9 @@ const deleteRecipe = async(id)=>{
     return await Recipe.findByIdAndDelete(id);
 }
 
-const searchRecipe = async(query)=>{
-  const regex = new RegExp(`^${query}`, 'i');
-  return await Recipe.find({ title: { $regex: regex } }).limit(10);
-}
+const searchRecipe = async (query) => {
+  return await Recipe.find(query).limit(10);
+};
 
 const uploadToS3 = async (file) => {
   const params = {
