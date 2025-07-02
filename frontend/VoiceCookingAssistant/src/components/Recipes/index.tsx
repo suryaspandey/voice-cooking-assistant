@@ -1,21 +1,41 @@
 import RecipeCard from "@components/RecipeCard";
+import RecipeSearchBox from "@components/RecipeSearchBox";
 import { Button } from "@components/ui/button";
-import { Card } from "@components/ui/card";
-import { Input } from "@components/ui/input";
 import { useRecipeStore } from "@store/recipeStore";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Recipes = () => {
-  const { recipesList, recipeListLoading, fetchRecipes, recipeListError }: any =
-    useRecipeStore();
+  const {
+    recipesList,
+    recipeListLoading,
+    fetchRecipes,
+    searchRecipesByTitleAndCategory,
+    recipeListError,
+  }: any = useRecipeStore();
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTitle, setSearchTitle] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     fetchRecipes();
   }, []);
+
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      const isTitle = searchTitle.trim() !== "";
+      const isCategory = selectedCategory !== "All";
+      if (!isTitle && !isCategory) {
+        fetchRecipes();
+      } else {
+        const filters = {};
+        if (isTitle) filters.title = searchTitle;
+        if (isCategory) filters.category = selectedCategory;
+        searchRecipesByTitleAndCategory(filters);
+      }
+    }, 300);
+    return () => clearTimeout(debounceTimeout);
+  }, [searchTitle, selectedCategory]);
 
   if (recipeListLoading) return <p>Loading recipes...</p>;
   if (recipeListError) return <p>{recipeListError.message}</p>;
@@ -44,11 +64,11 @@ const Recipes = () => {
       <div className="mb-8 space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Search recipes or ingredients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-12 text-lg border-orange-200"
+          <RecipeSearchBox
+            onSelect={(query: any) => {
+              // setSelectedCategory(selectedCategory);
+              setSearchTitle(query);
+            }}
           />
         </div>
 
@@ -57,7 +77,9 @@ const Recipes = () => {
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => {
+                setSelectedCategory(category);
+              }}
               className={
                 selectedCategory === category
                   ? "bg-orange-500 hover:bg-orange-600"
