@@ -5,13 +5,20 @@ const recipeSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim:true,
-    minLength: [3, 'Title must be at least 3 characters']
+    minlength: [3, 'Title must be at least 3 characters']
+  },
+  description: {
+    type: String,
+    required: true,
+    trim:true,
+    minlength: [50, 'Description must be at least 50 characters'],
+    maxlength: [200, 'Description must be at most 200 characters']
   },
   category: {
     type: String,
     required: true,
     trim:true,
-    minLength: [5, 'Category must be at least 5 characters']
+    minlength: [5, 'Category must be at least 5 characters']
   },
   ingredients: {
     type: [String],
